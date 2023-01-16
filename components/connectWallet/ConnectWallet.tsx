@@ -1,12 +1,12 @@
 import { Icon } from "@makerdao/dai-ui-icons";
 import { MewConnectConnector } from "@myetherwallet/mewconnect-connector";
 import { LedgerConnector, TrezorConnector } from "@oasisdex/connectors";
+import { getNetworkId } from "blockchain/web3ContextNetwork";
 import {
   ConnectionKind,
-  getNetworkId,
   Web3Context,
   Web3ContextNotConnected,
-} from "@oasisdex/web3-context";
+} from "blockchain/web3ContextTypes";
 import { UnsupportedChainIdError } from "@web3-react/core";
 import { useTranslation } from "next-i18next";
 import React, { useEffect } from "react";
@@ -73,14 +73,22 @@ export async function getConnector(
 
   switch (connectorKind) {
     case "injected": {
+      // console.log(networksById[network], "networksById");
+
       const connector = new InjectedConnector({
         supportedChainIds: Object.values(networksById).map(({ id }) =>
           Number.parseInt(id)
         ),
       });
+      console.log({ connector });
+
       const connectorChainId = Number.parseInt(
         (await connector.getChainId()) as string
       );
+      console.log({ network, connectorChainId }, "last");
+
+      console.log(network !== connectorChainId, "check");
+
       if (network !== connectorChainId) {
         options.switchNetworkModal(connectorKind);
         throw new Error(
@@ -134,6 +142,8 @@ export async function getConnector(
       });
     case "magicLink":
       throw new Error("Magic Link not allowed");
+    // case "torus":
+    // return new
   }
 }
 
@@ -144,6 +154,7 @@ const SUPPORTED_WALLETS: Exclude<ConnectionKind, "gnosisSafe">[] = [
   "portis",
   "myetherwallet",
   "trezor",
+  "network",
 ];
 
 const isFirefox = browserDetect().name === "firefox";
@@ -225,23 +236,29 @@ function ConnectWalletButton({
   );
 }
 
-function connect(
+export function connect(
   web3Context: Web3Context | undefined,
   connectorKind: Exclude<ConnectionKind, "gnosisSafe">,
   chainId: number,
   options: Record<string, unknown> = {}
 ) {
   return async () => {
+    console.log("inside coonect connect wallet");
+
     if (
       web3Context?.status === "error" ||
       web3Context?.status === "notConnected" ||
       web3Context?.status === "connectedReadonly"
     ) {
       try {
+        console.log({ connectorKind, chainId, options }, "inside connect");
+
         const connector = await getConnector(connectorKind, chainId, options);
+        console.log(connector, "connector inside connect");
+
         web3Context.connect(connector, connectorKind);
       } catch (e) {
-        console.log(e);
+        console.log(e, "err");
       }
     }
   };
@@ -409,7 +426,13 @@ export function ConnectWallet() {
 
   useEffect(() => {
     const subscription = web3Context$.subscribe((web3Context) => {
-      if (web3Context.status === "connected") {
+      console.log(web3Context, "web3context inside useEffect");
+
+      if (
+        web3Context.status === "connected"
+        // ||
+        // web3Context.status === "connectedReadonly"
+      ) {
         const url = redirectState$.value;
         if (url !== undefined) {
           replace(url);
@@ -457,7 +480,8 @@ export function ConnectWallet() {
             )
             .subscribe(identity);
         }}
-        chainId={getNetworkId()}
+        // chainId={getNetworkId()}
+        chainId={132258}
         web3Context={web3Context}
       />
     );

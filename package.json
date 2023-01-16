@@ -29,6 +29,7 @@
     "@sentry/nextjs": "^6.17.7",
     "@storybook/storybook-deployer": "^2.8.11",
     "@theme-ui/style-guide": "^0.3.5",
+    "@toruslabs/customauth": "^11.4.0",
     "@typechain/ethers-v5": "^6.0.5",
     "@typechain/web3-v1": "^2.0.0",
     "@typeform/embed-react": "^1.13.0",

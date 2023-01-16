@@ -1,11 +1,10 @@
 // tslint:disable:no-console
+import { contract, ContractDesc } from "blockchain/web3ContextNetwork";
 import {
-  contract,
-  ContractDesc,
   Web3Context,
   Web3ContextConnected,
   Web3ContextConnectedReadonly,
-} from "@oasisdex/web3-context";
+} from "blockchain/web3ContextTypes";
 import BigNumber from "bignumber.js";
 import {
   bindNodeCallback,

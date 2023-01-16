@@ -1,6 +1,6 @@
 import { Icon } from "@makerdao/dai-ui-icons";
 import BigNumber from "bignumber.js";
-import { useAppContext } from "components/AppContextProvider";
+import { useAppContext, useTorusContext } from "components/AppContextProvider";
 import {
   disconnect,
   getConnectionDetails,
@@ -223,6 +223,44 @@ export function UserSettingsButtonContents({
           }}
         >
           {formatAddress(context.account, 6)}
+        </Text>
+      </Flex>
+      <Flex sx={{ ml: 2 }}>
+        <Icon
+          size="auto"
+          width="16"
+          height="16"
+          name="settings"
+          sx={{ flexShrink: 0, m: "13px" }}
+          color={active ? "primary100" : "inherit"}
+        />
+      </Flex>
+    </Flex>
+  );
+}
+
+export function UserSettingsButtonContentsTorus({}: // context,
+// web3Context,
+// active,
+any) {
+  // const { connectionKind } = web3Context;
+  // const { userIcon } = getConnectionDetails(getWalletKind(connectionKind));
+  const walletData = useTorusContext();
+
+  return (
+    <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
+      <Flex sx={{ alignItems: "center" }}>
+        {/* <Icon name={userIcon!} size="auto" width="42" /> */}
+        <Text
+          variant="address"
+          sx={{
+            ml: 3,
+            color: "primary100",
+            fontSize: 2,
+            fontWeight: [600, 500],
+          }}
+        >
+          {formatAddress(walletData?.result?.publicKey, 6)}
         </Text>
       </Flex>
       <Flex sx={{ ml: 2 }}>

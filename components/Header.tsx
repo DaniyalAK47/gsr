@@ -1,14 +1,17 @@
 import { Global } from "@emotion/core";
 import { Icon } from "@makerdao/dai-ui-icons";
+import { getNetworkId } from "blockchain/web3ContextNetwork";
 import { AppLink } from "components/Links";
-
 import {
   UserSettings,
   UserSettingsButtonContents,
+  UserSettingsButtonContentsTorus,
 } from "features/userSettings/UserSettingsView";
+import { connect as connectTorus } from "helpers/ConnectTorus";
 import { useObservable } from "helpers/observableHook";
 import { staticFilesRuntimeUrl } from "helpers/staticPaths";
 import { WithChildren } from "helpers/types";
+import { useFeatureToggle } from "helpers/useFeatureToggle";
 import { useOutsideElementClickHandler } from "helpers/useOutsideElementClickHandler";
 import { InitOptions } from "i18next";
 import { useTranslation } from "next-i18next";
@@ -28,7 +31,8 @@ import {
   Text,
 } from "theme-ui";
 import { useOnMobile } from "theme/useBreakpointIndex";
-import { useAppContext } from "./AppContextProvider";
+import { useAppContext, useTorusContext } from "./AppContextProvider";
+import { connect } from "./connectWallet/ConnectWallet";
 import { MobileSidePanelPortal, ModalCloseIcon } from "./Modal";
 import { useSharedUI } from "./SharedUIProvider";
 
@@ -216,6 +220,46 @@ function UserDesktopMenu() {
   );
 }
 
+function UserTorusDesktopMenu() {
+  const { t } = useTranslation();
+  // const { context$, web3Context$ } = useAppContext();
+  // const [context] = useObservable(context$);
+  // const [web3Context] = useObservable(web3Context$);
+  // const shouldHideSettings =
+  //   !context ||
+  //   context.status === "connectedReadonly" ||
+  //   web3Context?.status !== "connected";
+
+  return (
+    <Flex
+      sx={{
+        p: 0,
+        justifyContent: "space-between",
+        gap: 2,
+        zIndex: 3,
+      }}
+    >
+      <Flex
+        sx={{
+          position: "relative",
+        }}
+      >
+        <Box>
+          <ButtonDropdown
+            ButtonContents={({ active }) => (
+              <UserSettingsButtonContentsTorus
+              // {...{ context, web3Context, active }}
+              />
+            )}
+          >
+            <UserSettings sx={{ p: 4, minWidth: "380px" }} />
+          </ButtonDropdown>
+        </Box>
+      </Flex>
+    </Flex>
+  );
+}
+
 function MobileSettings() {
   const { vaultFormToggleTitle, setVaultFormOpened } = useSharedUI();
   const [opened, setOpened] = useState(false);
@@ -367,6 +411,72 @@ function ConnectedHeader() {
               </Flex>
             </Flex>
             <UserDesktopMenu />
+          </>
+        </BasicHeader>
+      ) : (
+        <Box sx={{ mb: 5 }}>
+          <BasicHeader variant="appContainer">
+            <Flex
+              sx={{
+                width: "100%",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Logo />
+            </Flex>
+            <Flex sx={{ flexShrink: 0 }}>
+              <MobileMenu />
+            </Flex>
+            <MobileSettings />
+          </BasicHeader>
+        </Box>
+      )}
+    </React.Fragment>
+  );
+}
+
+function ConnectedHeaderTorus() {
+  const { pathname } = useRouter();
+  const { t } = useTranslation();
+  const onMobile = useOnMobile();
+
+  return (
+    <React.Fragment>
+      {!onMobile ? (
+        <BasicHeader
+          sx={{
+            position: "relative",
+            alignItems: "center",
+            zIndex: 1,
+          }}
+          variant="appContainer"
+        >
+          <>
+            <Flex
+              sx={{
+                alignItems: "center",
+                justifyContent: ["space-between", "flex-start"],
+                width: ["100%", "auto"],
+              }}
+            >
+              <Logo />
+              <Flex sx={{ ml: 5, zIndex: 1 }}>
+                <AppLink
+                  variant="links.navHeader"
+                  href={LINKS.loginPage}
+                  sx={{
+                    mr: 4,
+                    color: navLinkColor(pathname.includes(LINKS.loginPage)),
+                  }}
+                >
+                  {t("nav.login")}
+                </AppLink>
+
+                {/* <AssetsDropdown /> */}
+              </Flex>
+            </Flex>
+            <UserTorusDesktopMenu />
           </>
         </BasicHeader>
       ) : (
@@ -662,11 +772,89 @@ function DisconnectedHeader() {
   );
 }
 
+function DisconnectedHeaderTorus() {
+  const { t } = useTranslation();
+  const { web3Context$ } = useAppContext();
+  const [web3Context] = useObservable(web3Context$);
+
+  return (
+    <>
+      <Box sx={{ display: ["none", "block"] }}>
+        <BasicHeader variant="appContainer">
+          <Grid
+            sx={{
+              alignItems: "center",
+              columnGap: [4, 4, 5],
+              gridAutoFlow: "column",
+              mr: 3,
+            }}
+          >
+            <Logo />
+          </Grid>
+          <Grid
+            sx={{ alignItems: "center", columnGap: 3, gridAutoFlow: "column" }}
+          >
+            <Button
+              sx={{
+                boxShadow: "cardLanding",
+                bg: "white",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                "&:hover svg": {
+                  transform: "translateX(8px)",
+                },
+                flexShrink: 0,
+              }}
+              onClick={() => {
+                const networkId = getNetworkId();
+                connectTorus();
+                connect(web3Context, "network", networkId);
+              }}
+            >
+              <Text variant="strong">{t("connect-wallet-button")}</Text>
+              <Icon
+                name="arrow_right"
+                size="15px"
+                sx={{
+                  color: "black",
+                  position: "relative",
+                  left: "6px",
+                  transition: "0.2s",
+                }}
+              />
+            </Button>
+            {/* <LanguageDropdown
+              sx={{
+                "@media (max-width: 1330px)": { ".menu": { right: "-6px" } },
+              }}
+            /> */}
+          </Grid>
+        </BasicHeader>
+      </Box>
+      <Box sx={{ display: ["block", "none"], mb: 5 }}>
+        <BasicHeader variant="appContainer">
+          <Logo />
+          <MobileMenu />
+        </BasicHeader>
+      </Box>
+    </>
+  );
+}
+
 export function AppHeader() {
   const { context$ } = useAppContext();
   const [context] = useObservable(context$);
+  const torusToggle = useFeatureToggle("Torus");
+  const walletData = useTorusContext();
 
-  return context?.status === "connected" ? (
+  return torusToggle ? (
+    walletData?.result ? (
+      (console.log(context, "walletData"), (<ConnectedHeader />))
+    ) : (
+      (console.log(context, "walletData"), (<DisconnectedHeaderTorus />))
+    )
+  ) : context?.status === "connected" ? (
     <ConnectedHeader />
   ) : (
     <DisconnectedHeader />

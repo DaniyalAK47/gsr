@@ -20,6 +20,7 @@ import { mixpanelInit } from "../analytics/mixpanel";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { trackingEvents } from "analytics/analytics";
+import { loadFeatureToggles } from "helpers/useFeatureToggle";
 
 const key = "gsr-cache";
 const cache = createCache({ key });
@@ -47,6 +48,7 @@ interface CustomAppProps {
 }
 
 mixpanelInit();
+loadFeatureToggles();
 
 function App({ Component, pageProps }: AppProps & CustomAppProps) {
   const Layout = Component.layout || AppLayout;

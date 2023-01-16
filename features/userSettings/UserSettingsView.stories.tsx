@@ -1,4 +1,4 @@
-import { Web3Context } from "@oasisdex/web3-context";
+import { Web3Context } from "blockchain/web3ContextTypes";
 import { storiesOf } from "@storybook/react";
 import BigNumber from "bignumber.js";
 import { AppContext } from "components/AppContext";

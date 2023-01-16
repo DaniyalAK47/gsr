@@ -1,5 +1,5 @@
 import { Icon } from "@makerdao/dai-ui-icons";
-import { AccountWithBalances, Web3Context } from "@oasisdex/web3-context";
+import { AccountWithBalances, Web3Context } from "blockchain/web3ContextTypes";
 import { AppSpinner } from "helpers/AppSpinner";
 import { formatAddress, formatCryptoBalance } from "helpers/formatters/format";
 import { useTranslation } from "next-i18next";

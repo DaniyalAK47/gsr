@@ -3,7 +3,7 @@ import {
   AccountWithBalances,
   Web3ContextConnecting,
   Web3ContextConnectingHWSelectAccount,
-} from "@oasisdex/web3-context";
+} from "blockchain/web3ContextTypes";
 import { AppSpinner } from "helpers/AppSpinner";
 import { formatAddress, formatCryptoBalance } from "helpers/formatters/format";
 import { useTranslation } from "next-i18next";

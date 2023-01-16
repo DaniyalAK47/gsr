@@ -1,4 +1,4 @@
-import { ContractDesc } from "@oasisdex/web3-context";
+import { ContractDesc } from "blockchain/web3ContextNetwork";
 import { Abi } from "helpers/types";
 import { keyBy } from "lodash";
 import getConfig from "next/config";
@@ -81,11 +81,14 @@ export const ilksNotSupportedOnGoerli = [
 const tokensMainnet = {} as Dictionary<ContractDesc>;
 
 const protoMain = {
-  id: "1",
+  // id: '1',
+  id: "132258",
   name: "main",
   label: "Mainnet",
-  infuraUrl: `https://mainnet.infura.io/v3/${infuraProjectId}`,
-  infuraUrlWS: `wss://mainnet.infura.io/ws/v3/${infuraProjectId}`,
+  // infuraUrl: `https://mainnet.infura.io/v3/${infuraProjectId}`,
+  infuraUrl: `https://api.dably.io/rpc`,
+  // infuraUrlWS: `wss://mainnet.infura.io/ws/v3/${infuraProjectId}`,
+  infuraUrlWS: `wss://api.dably.io/rpc`,
 
   tokens: tokensMainnet,
   tokensMainnet: tokensMainnet,
