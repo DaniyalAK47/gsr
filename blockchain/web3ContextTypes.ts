@@ -3,6 +3,7 @@ import BigNumber from "bignumber.js";
 import Web3 from "web3";
 
 export type ConnectionKind =
+  | "torus"
   | "injected"
   | "walletLink"
   | "walletConnect"

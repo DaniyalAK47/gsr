@@ -52,5 +52,4 @@ export async function redirectResults() {
   console.log(torusResult, "torusResult");
 
   return torusResult;
-  //   return torusResult;
 }

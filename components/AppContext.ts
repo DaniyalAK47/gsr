@@ -15,7 +15,6 @@ import {
 } from "../blockchain/network";
 
 import { networksById } from "blockchain/config";
-import { redirectResults } from "helpers/ConnectTorus";
 
 export type UIReducer = (prev: any, event: any) => any;
 
@@ -47,8 +46,6 @@ export function setupAppContext() {
   const context$ = createContext$(web3ContextConnected$);
 
   const connectedContext$ = createContextConnected$(context$);
-
-  // const torusAccount = redirectResults();
 
   combineLatest(account$, connectedContext$)
     .pipe(

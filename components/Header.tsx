@@ -5,7 +5,6 @@ import { AppLink } from "components/Links";
 import {
   UserSettings,
   UserSettingsButtonContents,
-  UserSettingsButtonContentsTorus,
 } from "features/userSettings/UserSettingsView";
 import { connect as connectTorus } from "helpers/ConnectTorus";
 import { useObservable } from "helpers/observableHook";
@@ -31,7 +30,7 @@ import {
   Text,
 } from "theme-ui";
 import { useOnMobile } from "theme/useBreakpointIndex";
-import { useAppContext, useTorusContext } from "./AppContextProvider";
+import { useAppContext } from "./AppContextProvider";
 import { connect } from "./connectWallet/ConnectWallet";
 import { MobileSidePanelPortal, ModalCloseIcon } from "./Modal";
 import { useSharedUI } from "./SharedUIProvider";
@@ -183,10 +182,11 @@ function UserDesktopMenu() {
   const { context$, web3Context$ } = useAppContext();
   const [context] = useObservable(context$);
   const [web3Context] = useObservable(web3Context$);
-  const shouldHideSettings =
-    !context ||
-    context.status === "connectedReadonly" ||
-    web3Context?.status !== "connected";
+  const shouldHideSettings = !context;
+  // ||
+  // context.status === "connectedReadonly" ||
+  // web3Context?.status !== "connected" ||
+  // web3Context?.status !== "connectedReadonly";
 
   return (
     <Flex
@@ -214,46 +214,6 @@ function UserDesktopMenu() {
               <UserSettings sx={{ p: 4, minWidth: "380px" }} />
             </ButtonDropdown>
           )}
-        </Box>
-      </Flex>
-    </Flex>
-  );
-}
-
-function UserTorusDesktopMenu() {
-  const { t } = useTranslation();
-  // const { context$, web3Context$ } = useAppContext();
-  // const [context] = useObservable(context$);
-  // const [web3Context] = useObservable(web3Context$);
-  // const shouldHideSettings =
-  //   !context ||
-  //   context.status === "connectedReadonly" ||
-  //   web3Context?.status !== "connected";
-
-  return (
-    <Flex
-      sx={{
-        p: 0,
-        justifyContent: "space-between",
-        gap: 2,
-        zIndex: 3,
-      }}
-    >
-      <Flex
-        sx={{
-          position: "relative",
-        }}
-      >
-        <Box>
-          <ButtonDropdown
-            ButtonContents={({ active }) => (
-              <UserSettingsButtonContentsTorus
-              // {...{ context, web3Context, active }}
-              />
-            )}
-          >
-            <UserSettings sx={{ p: 4, minWidth: "380px" }} />
-          </ButtonDropdown>
         </Box>
       </Flex>
     </Flex>
@@ -411,72 +371,6 @@ function ConnectedHeader() {
               </Flex>
             </Flex>
             <UserDesktopMenu />
-          </>
-        </BasicHeader>
-      ) : (
-        <Box sx={{ mb: 5 }}>
-          <BasicHeader variant="appContainer">
-            <Flex
-              sx={{
-                width: "100%",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Logo />
-            </Flex>
-            <Flex sx={{ flexShrink: 0 }}>
-              <MobileMenu />
-            </Flex>
-            <MobileSettings />
-          </BasicHeader>
-        </Box>
-      )}
-    </React.Fragment>
-  );
-}
-
-function ConnectedHeaderTorus() {
-  const { pathname } = useRouter();
-  const { t } = useTranslation();
-  const onMobile = useOnMobile();
-
-  return (
-    <React.Fragment>
-      {!onMobile ? (
-        <BasicHeader
-          sx={{
-            position: "relative",
-            alignItems: "center",
-            zIndex: 1,
-          }}
-          variant="appContainer"
-        >
-          <>
-            <Flex
-              sx={{
-                alignItems: "center",
-                justifyContent: ["space-between", "flex-start"],
-                width: ["100%", "auto"],
-              }}
-            >
-              <Logo />
-              <Flex sx={{ ml: 5, zIndex: 1 }}>
-                <AppLink
-                  variant="links.navHeader"
-                  href={LINKS.loginPage}
-                  sx={{
-                    mr: 4,
-                    color: navLinkColor(pathname.includes(LINKS.loginPage)),
-                  }}
-                >
-                  {t("nav.login")}
-                </AppLink>
-
-                {/* <AssetsDropdown /> */}
-              </Flex>
-            </Flex>
-            <UserTorusDesktopMenu />
           </>
         </BasicHeader>
       ) : (
@@ -846,19 +740,19 @@ export function AppHeader() {
   const { context$ } = useAppContext();
   const [context] = useObservable(context$);
   const torusToggle = useFeatureToggle("Torus");
-  const walletData = useTorusContext();
 
-  return torusToggle ? (
-    walletData?.result ? (
-      (console.log(context, "walletData"), (<ConnectedHeader />))
-    ) : (
-      (console.log(context, "walletData"), (<DisconnectedHeaderTorus />))
-    )
-  ) : context?.status === "connected" ? (
+  return context?.status === "connected" ? (
     <ConnectedHeader />
   ) : (
     <DisconnectedHeader />
   );
+  // torusToggle ? (
+  //   context?.status === "connectedReadonly" ? (
+  //     <ConnectedHeader />
+  //   ) : (
+  //     <DisconnectedHeaderTorus />
+  //   )
+  // ) :
 }
 
 export function ConnectPageHeader() {

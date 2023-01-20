@@ -9,6 +9,7 @@ import {
 import { AppLink } from "components/Links";
 import { formatAddress, formatCryptoBalance } from "helpers/formatters/format";
 import { useObservable } from "helpers/observableHook";
+import { useFeatureToggle } from "helpers/useFeatureToggle";
 import { useTranslation } from "next-i18next";
 import React, { useRef } from "react";
 import { Box, Button, Flex, Grid, SxStyleProp, Text, Textarea } from "theme-ui";
@@ -77,6 +78,7 @@ function WalletInfo() {
   const { web3Context$ } = useAppContext();
   const [web3Context] = useObservable(web3Context$);
   const clipboardContentRef = useRef<HTMLTextAreaElement>(null);
+  const torusToggle = useFeatureToggle("Torus");
 
   const { t } = useTranslation();
 
@@ -103,7 +105,7 @@ function WalletInfo() {
         <Grid sx={{ gap: 0, width: "100%" }}>
           <Flex sx={{ justifyContent: "space-between" }}>
             <Text variant="address" sx={{ fontWeight: 600, fontSize: 5 }}>
-              {formatAddress(account, 6)}
+              {torusToggle ? "123" : "formatAddress(account, 6)"}
             </Text>
 
             <Text
@@ -208,71 +210,49 @@ export function UserSettingsButtonContents({
 }: any) {
   const { connectionKind } = web3Context;
   const { userIcon } = getConnectionDetails(getWalletKind(connectionKind));
+  const torusToggle = useFeatureToggle("Torus");
+  if (torusToggle) {
+    var walletData = useTorusContext();
+  }
 
   return (
-    <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
-      <Flex sx={{ alignItems: "center" }}>
-        <Icon name={userIcon!} size="auto" width="42" />
-        <Text
-          variant="address"
-          sx={{
-            ml: 3,
-            color: "primary100",
-            fontSize: 2,
-            fontWeight: [600, 500],
-          }}
-        >
-          {formatAddress(context.account, 6)}
-        </Text>
+    console.log(walletData, "walletData user setting"),
+    (
+      <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
+        <Flex sx={{ alignItems: "center" }}>
+          <Icon name={userIcon!} size="auto" width="42" />
+          <Text
+            variant="address"
+            sx={{
+              ml: 3,
+              color: "primary100",
+              fontSize: 2,
+              fontWeight: [600, 500],
+            }}
+          >
+            {torusToggle && walletData?.result?.publicAddress
+              ? formatAddress(
+                  torusToggle
+                    ? walletData?.result?.publicAddress
+                    : context.account,
+                  6
+                )
+              : context.account
+              ? context.account
+              : "loading"}
+          </Text>
+        </Flex>
+        <Flex sx={{ ml: 2 }}>
+          <Icon
+            size="auto"
+            width="16"
+            height="16"
+            name="settings"
+            sx={{ flexShrink: 0, m: "13px" }}
+            color={active ? "primary100" : "inherit"}
+          />
+        </Flex>
       </Flex>
-      <Flex sx={{ ml: 2 }}>
-        <Icon
-          size="auto"
-          width="16"
-          height="16"
-          name="settings"
-          sx={{ flexShrink: 0, m: "13px" }}
-          color={active ? "primary100" : "inherit"}
-        />
-      </Flex>
-    </Flex>
-  );
-}
-
-export function UserSettingsButtonContentsTorus({}: // context,
-// web3Context,
-// active,
-any) {
-  // const { connectionKind } = web3Context;
-  // const { userIcon } = getConnectionDetails(getWalletKind(connectionKind));
-  const walletData = useTorusContext();
-
-  return (
-    <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
-      <Flex sx={{ alignItems: "center" }}>
-        {/* <Icon name={userIcon!} size="auto" width="42" /> */}
-        <Text
-          variant="address"
-          sx={{
-            ml: 3,
-            color: "primary100",
-            fontSize: 2,
-            fontWeight: [600, 500],
-          }}
-        >
-          {formatAddress(walletData?.result?.publicKey, 6)}
-        </Text>
-      </Flex>
-      <Flex sx={{ ml: 2 }}>
-        <Icon
-          size="auto"
-          width="16"
-          height="16"
-          name="settings"
-          sx={{ flexShrink: 0, m: "13px" }}
-          color={active ? "primary100" : "inherit"}
-        />
-      </Flex>
-    </Flex>
+    )
   );
 }

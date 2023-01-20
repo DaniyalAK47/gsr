@@ -38,6 +38,8 @@ import {
   SwitchNetworkModal,
   SwitchNetworkModalType,
 } from "../SwitchNetworkModal";
+import { useFeatureToggle } from "helpers/useFeatureToggle";
+import { connect as connectTorus } from "helpers/ConnectTorus";
 
 export const AUTO_CONNECT = "autoConnect";
 
@@ -325,6 +327,11 @@ interface ConnectionDetail {
 }
 
 const connectionDetails: Record<WalletKind, ConnectionDetail> = {
+  torus: {
+    friendlyName: "Torus",
+    connectIcon: "torus_color",
+    userIcon: "torus_user",
+  },
   walletConnect: {
     friendlyName: "WalletConnect",
     connectIcon: "wallet_connect_color",
@@ -423,11 +430,10 @@ export function ConnectWallet() {
   const openModal = useModal();
   const switchNetworkModal = (type: SwitchNetworkModalType) =>
     openModal(SwitchNetworkModal, { type });
+  const torusToggle = useFeatureToggle("Torus");
 
   useEffect(() => {
     const subscription = web3Context$.subscribe((web3Context) => {
-      console.log(web3Context, "web3context inside useEffect");
-
       if (
         web3Context.status === "connected"
         // ||
@@ -539,6 +545,18 @@ export function ConnectWallet() {
         </Alert>
       )}
       <Grid columns={1} sx={{ maxWidth: "280px", width: "100%", mx: "auto" }}>
+        {torusToggle && (
+          <ConnectWalletButton
+            {...{
+              key: "torus",
+              isConnecting: false,
+              iconName: "torus", // todo: use some default icon instead of metamask
+              description: "Torus",
+              connect: connectTorus,
+              missingInjectedWallet: false,
+            }}
+          />
+        )}
         {SUPPORTED_WALLETS.map((connectionKind) => {
           const isConnecting =
             (web3Context.status === "connecting" ||
@@ -558,6 +576,7 @@ export function ConnectWallet() {
               });
 
           const networkId = getNetworkId();
+          console.log(connectIcon, "connectIcon");
 
           return (
             <ConnectWalletButton

@@ -4,9 +4,7 @@ import { RedirectResult } from "@toruslabs/customauth";
 import { WithChildren } from "../helpers/types";
 import { AppContext, setupAppContext } from "./AppContext";
 import { setupTorusContext } from "./TorusContext";
-import { useObservable } from "helpers/observableHook";
-import { getNetworkId } from "blockchain/web3ContextNetwork";
-import { connect } from "./connectWallet/ConnectWallet";
+import { useFeatureToggle } from "helpers/useFeatureToggle";
 
 export const appContext =
   React.createContext<AppContext | undefined>(undefined);
@@ -20,7 +18,6 @@ export function isAppContextAvailable(): boolean {
 
 export function useAppContext(): AppContext {
   const ac = useContext(appContext);
-  // console.log("ac", ac);
   if (!ac) {
     throw new Error(
       "AppContext not available! useAppContext can't be used serverside"
@@ -31,7 +28,6 @@ export function useAppContext(): AppContext {
 
 export function useTorusContext(): RedirectResult | undefined {
   const ac = useContext(torusContext);
-  // console.log("ac", ac);
   // if (!ac) {
   //   throw new Error(
   //     "AppContext not available! useAppContext can't be used serverside"
@@ -52,36 +48,23 @@ export function AppContextProvider({ children }: WithChildren) {
   const [contextTorus, setContextTorus] =
     useState<RedirectResult | undefined>(undefined);
   const router = useRouter();
-  // if (context) {
-  //   const { web3Context$ } = useAppContext();
-  // }
+  const torusToggle = useFeatureToggle("Torus");
 
   useEffect(() => {
     setContext(setupAppContext());
   }, []);
 
-  // const { web3Context$ } = useAppContext();
-
   useEffect(() => {
     const getData = async () => {
-      if (router.pathname == "/signedIn") {
-        // const networkId = getNetworkId();
-        // if (context) {
-        //   var [web3Context] = useObservable(context?.web3Context$);
-        // }
-
-        // console.log(web3Context, "web3Context in getData");
-
+      if (torusToggle && router.pathname == "/signedIn") {
         setContextTorus(await setupTorusContext());
-
-        // connect(web3Context, "network", networkId);
       }
     };
     getData();
   }, [router.pathname]);
 
   return (
-    console.log(torusContext, "torus context", context, "context"),
+    console.log(context, "app pro"),
     (
       <>
         <torusContext.Provider value={contextTorus}>

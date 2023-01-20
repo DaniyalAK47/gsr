@@ -2,8 +2,9 @@ import { getNetworkId } from "blockchain/web3ContextNetwork";
 import { useAppContext } from "components/AppContextProvider";
 import { connect } from "components/connectWallet/ConnectWallet";
 import { useObservable } from "helpers/observableHook";
+import { useFeatureToggle } from "helpers/useFeatureToggle";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
@@ -14,28 +15,16 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
 function SignedInPage() {
   const { web3Context$ } = useAppContext();
   const [web3Context] = useObservable(web3Context$);
-  // const [web3Context] = useMemo(
-  //   () => useObservable(web3Context$),
-  //   [web3Context$]
-  // );
-  const shouldSetStateToLoading =
-    web3Context?.status === "connectedReadonly" ? false : true;
+  const torusToggle = useFeatureToggle("Torus");
 
   useEffect(() => {
-    console.log("inside signedIn useEffect");
-
     async function getData() {
-      console.log("inside signedIn getData");
-
       const networkId = getNetworkId();
 
-      console.log(networkId, web3Context, "web3Context in signIn");
-
       connect(web3Context, "network", networkId)();
-      // console.log(res, "res after connect");
     }
-    getData();
-  }, [web3Context]);
+    if (torusToggle && web3Context?.status !== "connectedReadonly") getData();
+  }, [web3Context?.status]);
 
   return (
     <div>

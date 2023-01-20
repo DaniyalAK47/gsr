@@ -85,5 +85,5 @@ export function formatAddress(
   first: number = 4,
   last: number = 5
 ) {
-  return `${address.slice(0, first)}...${address.slice(-last)}`;
+  return `${address?.slice(0, first)}...${address?.slice(-last)}`;
 }
