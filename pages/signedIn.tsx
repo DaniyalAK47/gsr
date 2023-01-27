@@ -27,9 +27,12 @@ function SignedInPage() {
   }, [web3Context?.status]);
 
   return (
-    <div>
-      <p>You have logged in. </p>
-    </div>
+    console.log(web3Context.b),
+    (
+      <div>
+        <p>You have logged in. </p>
+      </div>
+    )
   );
 }
 

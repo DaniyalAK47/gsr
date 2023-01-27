@@ -7,12 +7,14 @@
   "learn-about-wallets": "Learn more about wallets",
   "learn-more-link": "https://ethereum.org/en/wallets/find-wallet/",
   "app-wrong-network": "Oops, your wallet is not supported by the current GSUcoin.app network.",
+  "app-wallet-not-working": "Oops, your wallet is not working. Please try again later.",
   "app-wrong-network-desc": "It seems that GSUcoin.app is currently running on network that is not supported by your wallet. Please click on the button below to change it.",
   "wallet-wrong-network": "Oops, your wallet is not on the right network.",
   "wallet-wrong-network-desc": "It seems your wallet is running on a different network from GSUcoin.app. Please manually change the network in your wallet, or you can click the button below.",
   "user-wrong-network-desc": "It seems your wallet is running on a different network from GSUcoin.app. Please manually change the network in your wallet.",
   "switch-network": "Switch network",
   "switch-to-mainnet": "Switch to Mainnet",
+  "close": "Close",
   "nav": {
     "login": "log in page"
   }

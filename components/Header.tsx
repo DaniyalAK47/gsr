@@ -739,20 +739,13 @@ function DisconnectedHeaderTorus() {
 export function AppHeader() {
   const { context$ } = useAppContext();
   const [context] = useObservable(context$);
-  const torusToggle = useFeatureToggle("Torus");
 
-  return context?.status === "connected" ? (
-    <ConnectedHeader />
+  return context?.status === "connected" ||
+    context?.status === "connectedReadonly" ? (
+    (console.log(context, "inheahd"), (<ConnectedHeader />))
   ) : (
     <DisconnectedHeader />
   );
-  // torusToggle ? (
-  //   context?.status === "connectedReadonly" ? (
-  //     <ConnectedHeader />
-  //   ) : (
-  //     <DisconnectedHeaderTorus />
-  //   )
-  // ) :
 }
 
 export function ConnectPageHeader() {

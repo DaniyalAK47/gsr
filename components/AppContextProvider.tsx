@@ -10,7 +10,9 @@ export const appContext =
   React.createContext<AppContext | undefined>(undefined);
 
 export const torusContext =
-  React.createContext<RedirectResult | undefined>(undefined);
+  React.createContext<(RedirectResult & { setState: any }) | undefined>(
+    undefined
+  );
 
 export function isAppContextAvailable(): boolean {
   return !!useContext(appContext);
@@ -26,7 +28,9 @@ export function useAppContext(): AppContext {
   return ac;
 }
 
-export function useTorusContext(): RedirectResult | undefined {
+export function useTorusContext():
+  | (RedirectResult & { setState: any })
+  | undefined {
   const ac = useContext(torusContext);
   // if (!ac) {
   //   throw new Error(
@@ -64,10 +68,12 @@ export function AppContextProvider({ children }: WithChildren) {
   }, [router.pathname]);
 
   return (
-    console.log(context, "app pro"),
+    console.log(context, "context"),
     (
       <>
-        <torusContext.Provider value={contextTorus}>
+        <torusContext.Provider
+          value={{ ...contextTorus, setState: setContextTorus }}
+        >
           <appContext.Provider value={context}>{children}</appContext.Provider>
         </torusContext.Provider>
       </>

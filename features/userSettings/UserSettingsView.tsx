@@ -79,6 +79,9 @@ function WalletInfo() {
   const [web3Context] = useObservable(web3Context$);
   const clipboardContentRef = useRef<HTMLTextAreaElement>(null);
   const torusToggle = useFeatureToggle("Torus");
+  if (torusToggle) {
+    var walletData = useTorusContext();
+  }
 
   const { t } = useTranslation();
 
@@ -91,7 +94,11 @@ function WalletInfo() {
     }
   }
 
-  if (web3Context?.status !== "connected") return null;
+  if (
+    web3Context?.status !== "connected" &&
+    web3Context?.status !== "connectedReadonly"
+  )
+    return null;
 
   const { account, connectionKind } = web3Context;
   const { userIcon } = getConnectionDetails(
@@ -105,7 +112,9 @@ function WalletInfo() {
         <Grid sx={{ gap: 0, width: "100%" }}>
           <Flex sx={{ justifyContent: "space-between" }}>
             <Text variant="address" sx={{ fontWeight: 600, fontSize: 5 }}>
-              {torusToggle ? "123" : "formatAddress(account, 6)"}
+              {account
+                ? formatAddress(account, 6)
+                : formatAddress(walletData?.result?.publicAddress, 6)}
             </Text>
 
             <Text
@@ -136,6 +145,7 @@ export function UserSettings({ sx }: { sx?: SxStyleProp }) {
   const { t } = useTranslation();
   const { web3Context$ } = useAppContext();
   const [web3Context] = useObservable(web3Context$);
+  const walletData = useTorusContext();
 
   return (
     <Box sx={sx}>
@@ -154,6 +164,7 @@ export function UserSettings({ sx }: { sx?: SxStyleProp }) {
         }}
         onClick={() => {
           disconnect(web3Context);
+          walletData?.setState();
         }}
       >
         <Icon name="sign_out" color="primary60" size="auto" width={20} />
@@ -216,43 +227,35 @@ export function UserSettingsButtonContents({
   }
 
   return (
-    console.log(walletData, "walletData user setting"),
-    (
-      <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
-        <Flex sx={{ alignItems: "center" }}>
-          <Icon name={userIcon!} size="auto" width="42" />
-          <Text
-            variant="address"
-            sx={{
-              ml: 3,
-              color: "primary100",
-              fontSize: 2,
-              fontWeight: [600, 500],
-            }}
-          >
-            {torusToggle && walletData?.result?.publicAddress
-              ? formatAddress(
-                  torusToggle
-                    ? walletData?.result?.publicAddress
-                    : context.account,
-                  6
-                )
-              : context.account
-              ? context.account
-              : "loading"}
-          </Text>
-        </Flex>
-        <Flex sx={{ ml: 2 }}>
-          <Icon
-            size="auto"
-            width="16"
-            height="16"
-            name="settings"
-            sx={{ flexShrink: 0, m: "13px" }}
-            color={active ? "primary100" : "inherit"}
-          />
-        </Flex>
+    <Flex sx={{ alignItems: "center", justifyContent: "space-between" }}>
+      <Flex sx={{ alignItems: "center" }}>
+        <Icon name={userIcon!} size="auto" width="42" />
+        <Text
+          variant="address"
+          sx={{
+            ml: 3,
+            color: "primary100",
+            fontSize: 2,
+            fontWeight: [600, 500],
+          }}
+        >
+          {torusToggle && walletData?.result?.publicAddress
+            ? formatAddress(walletData?.result?.publicAddress, 6)
+            : context.account
+            ? formatAddress(context.account, 6)
+            : "loading"}
+        </Text>
       </Flex>
-    )
+      <Flex sx={{ ml: 2 }}>
+        <Icon
+          size="auto"
+          width="16"
+          height="16"
+          name="settings"
+          sx={{ flexShrink: 0, m: "13px" }}
+          color={active ? "primary100" : "inherit"}
+        />
+      </Flex>
+    </Flex>
   );
 }

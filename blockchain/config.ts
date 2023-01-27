@@ -81,14 +81,14 @@ export const ilksNotSupportedOnGoerli = [
 const tokensMainnet = {} as Dictionary<ContractDesc>;
 
 const protoMain = {
-  // id: '1',
-  id: "132258",
+  id: "1",
+  // id: "132258",
   name: "main",
   label: "Mainnet",
-  // infuraUrl: `https://mainnet.infura.io/v3/${infuraProjectId}`,
-  infuraUrl: `https://api.dably.io/rpc`,
-  // infuraUrlWS: `wss://mainnet.infura.io/ws/v3/${infuraProjectId}`,
-  infuraUrlWS: `wss://api.dably.io/rpc`,
+  infuraUrl: `https://mainnet.infura.io/v3/${infuraProjectId}`,
+  // infuraUrl: `https://api.dably.io/rpc`,
+  infuraUrlWS: `wss://mainnet.infura.io/ws/v3/${infuraProjectId}`,
+  // infuraUrlWS: `wss://api.dably.io/rpc`,
 
   tokens: tokensMainnet,
   tokensMainnet: tokensMainnet,

@@ -59,7 +59,6 @@ export async function getConnector(
   options: Record<string, any> = {}
 ) {
   assert(rpcUrls[network], "Unsupported chainId!");
-
   if (
     connectorKind !== "injected" &&
     connectorKind !== "network" &&
@@ -75,14 +74,11 @@ export async function getConnector(
 
   switch (connectorKind) {
     case "injected": {
-      // console.log(networksById[network], "networksById");
-
       const connector = new InjectedConnector({
         supportedChainIds: Object.values(networksById).map(({ id }) =>
           Number.parseInt(id)
         ),
       });
-      console.log({ connector });
 
       const connectorChainId = Number.parseInt(
         (await connector.getChainId()) as string
@@ -137,6 +133,7 @@ export async function getConnector(
       return new PortisConnector({
         networks: [network],
         dAppId: "d1e6438b-2ae9-4cbf-940c-28d3719ea455",
+        // dAppId: "d1e6438b-2ae9-4cbf-940c-28d3719ea4",
       });
     case "myetherwallet":
       return new MewConnectConnector({
@@ -156,7 +153,8 @@ const SUPPORTED_WALLETS: Exclude<ConnectionKind, "gnosisSafe">[] = [
   "portis",
   "myetherwallet",
   "trezor",
-  "network",
+  // "network",
+  "magicLink",
 ];
 
 const isFirefox = browserDetect().name === "firefox";
@@ -245,22 +243,19 @@ export function connect(
   options: Record<string, unknown> = {}
 ) {
   return async () => {
-    console.log("inside coonect connect wallet");
-
     if (
       web3Context?.status === "error" ||
       web3Context?.status === "notConnected" ||
       web3Context?.status === "connectedReadonly"
     ) {
       try {
-        console.log({ connectorKind, chainId, options }, "inside connect");
-
         const connector = await getConnector(connectorKind, chainId, options);
-        console.log(connector, "connector inside connect");
+        console.log(connector, "log connector");
 
         web3Context.connect(connector, connectorKind);
       } catch (e) {
-        console.log(e, "err");
+        console.log(e, "err in connect");
+        // options.switchNetworkModal("walletIssue");
       }
     }
   };
@@ -552,7 +547,10 @@ export function ConnectWallet() {
               isConnecting: false,
               iconName: "torus", // todo: use some default icon instead of metamask
               description: "Torus",
-              connect: connectTorus,
+              connect: () =>
+                connectTorus({
+                  switchNetworkModal,
+                }),
               missingInjectedWallet: false,
             }}
           />
@@ -576,7 +574,6 @@ export function ConnectWallet() {
               });
 
           const networkId = getNetworkId();
-          console.log(connectIcon, "connectIcon");
 
           return (
             <ConnectWalletButton
@@ -680,7 +677,10 @@ function autoConnect(
 }
 
 export function disconnect(web3Context: Web3Context | undefined) {
-  if (web3Context?.status === "connected") {
+  if (
+    web3Context?.status === "connected" ||
+    web3Context?.status === "connectedReadonly"
+  ) {
     web3Context.deactivate();
 
     // WalletConnect places this in LS and tries to reconnect without asking for QR

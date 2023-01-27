@@ -10,7 +10,11 @@ import { ModalProps } from "../helpers/modalHook";
 import { staticFilesRuntimeUrl } from "../helpers/staticPaths";
 import { Modal, ModalCloseIcon } from "./Modal";
 
-export type SwitchNetworkModalType = "injected" | "appNetwork" | "userNetwork";
+export type SwitchNetworkModalType =
+  | "injected"
+  | "appNetwork"
+  | "userNetwork"
+  | "walletIssue";
 
 const mainnetId = 1;
 
@@ -97,6 +101,7 @@ export function SwitchNetworkModal({
             {(type === "injected" || type === "userNetwork") &&
               t("wallet-wrong-network")}
             {type === "appNetwork" && t("app-wrong-network")}
+            {type === "walletIssue" && t("app-wallet-not-working")}
           </Heading>
           <Text
             variant="paragraph3"
@@ -105,6 +110,7 @@ export function SwitchNetworkModal({
             {type === "injected" && t("wallet-wrong-network-desc")}
             {type === "appNetwork" && t("app-wrong-network-desc")}
             {type === "userNetwork" && t("user-wrong-network-desc")}
+            {/* {type === "walletIssue" && t("app-wallet-not-working-desc")} */}
           </Text>
           {ethereum?.isMetaMask && type === "injected" && (
             <Button
@@ -122,6 +128,15 @@ export function SwitchNetworkModal({
               onClick={handleAppNetworkSwitch}
             >
               {t("switch-to-mainnet")}
+            </Button>
+          )}
+          {type === "walletIssue" && (
+            <Button
+              variant="primary"
+              sx={{ fontSize: 3, width: "100%" }}
+              onClick={close}
+            >
+              {t("close")}
             </Button>
           )}
         </Flex>

@@ -2,7 +2,7 @@ import { createWeb3Context$ } from "blockchain/web3Context";
 // import { trackingEvents } from "analytics/analytics";
 // import { mixpanelIdentify } from "analytics/mixpanel";
 import { redirectState$ } from "features/router/redirectState";
-import { isEqual, mapValues } from "lodash";
+import { curry, isEqual, mapValues, memoize } from "lodash";
 import { combineLatest, of } from "rxjs";
 import { distinctUntilChanged, mergeMap } from "rxjs/operators";
 import {
@@ -13,8 +13,11 @@ import {
   createOnEveryBlock$,
   createWeb3ContextConnected$,
 } from "../blockchain/network";
-
 import { networksById } from "blockchain/config";
+import { observe } from "blockchain/calls/observe";
+import { tokenBalance } from "blockchain/calls/erc20";
+import { shareReplay } from "rxjs/operators";
+import { createBalance$ } from "blockchain/tokens";
 
 export type UIReducer = (prev: any, event: any) => any;
 
@@ -45,6 +48,14 @@ export function setupAppContext() {
 
   const context$ = createContext$(web3ContextConnected$);
 
+  const chainContext$ = context$.pipe(
+    distinctUntilChanged(
+      (previousContext, newContext) =>
+        previousContext.chainId === newContext.chainId
+    ),
+    shareReplay(1)
+  );
+
   const connectedContext$ = createContextConnected$(context$);
 
   combineLatest(account$, connectedContext$)
@@ -65,6 +76,13 @@ export function setupAppContext() {
       }
     });
 
+  const tokenBalance$ = observe(onEveryBlock$, context$, tokenBalance);
+
+  const balance$ = memoize(
+    curry(createBalance$)(onEveryBlock$, chainContext$, tokenBalance$),
+    (token, address) => `${token}_${address}`
+  );
+
   return {
     web3Context$,
     web3ContextConnected$,
@@ -74,6 +92,7 @@ export function setupAppContext() {
     onEveryBlock$,
     redirectState$,
     connectedContext$,
+    balance$,
   };
 }
 
