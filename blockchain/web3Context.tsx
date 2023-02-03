@@ -55,7 +55,7 @@ export function createWeb3Context$(
       active,
       error,
     } = context;
-    console.log(context, "context");
+    // console.log(context, "context");
 
     const [activatingConnector, setActivatingConnector] =
       useState<AbstractConnector>();
@@ -98,7 +98,7 @@ export function createWeb3Context$(
       }
 
       if (error) {
-        console.log(error);
+        console.log(error, "someehere else");
         push({
           status: "error",
           error,
@@ -153,6 +153,8 @@ export function createWeb3Context$(
       }
 
       if (chainId !== getNetworkId()) {
+        console.log("i am running 1");
+
         setTimeout(() => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           connect(

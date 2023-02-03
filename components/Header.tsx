@@ -7,6 +7,7 @@ import {
   UserSettingsButtonContents,
 } from "features/userSettings/UserSettingsView";
 import { connect as connectTorus } from "helpers/ConnectTorus";
+import { formatCryptoBalance } from "helpers/formatters/format";
 import { useObservable } from "helpers/observableHook";
 import { staticFilesRuntimeUrl } from "helpers/staticPaths";
 import { WithChildren } from "helpers/types";
@@ -180,43 +181,48 @@ function ButtonDropdown({
 function UserDesktopMenu() {
   const { t } = useTranslation();
   const { context$, web3Context$ } = useAppContext();
+  // const [accountData] = useObservable(accountData$);
   const [context] = useObservable(context$);
   const [web3Context] = useObservable(web3Context$);
   const shouldHideSettings = !context;
-  // ||
-  // context.status === "connectedReadonly" ||
-  // web3Context?.status !== "connected" ||
-  // web3Context?.status !== "connectedReadonly";
+  // // context.status === "connectedReadonly" ||
+  // !(
+  //   web3Context?.status === "connected" ||
+  //   web3Context?.status === "connectedReadonly"
+  // );
 
   return (
-    <Flex
-      sx={{
-        p: 0,
-        justifyContent: "space-between",
-        gap: 2,
-        zIndex: 3,
-      }}
-    >
+    console.log(web3Context, "user menu", context, "context"),
+    (
       <Flex
         sx={{
-          position: "relative",
+          p: 0,
+          justifyContent: "space-between",
+          gap: 2,
+          zIndex: 3,
         }}
       >
-        <Box>
-          {!shouldHideSettings && (
-            <ButtonDropdown
-              ButtonContents={({ active }) => (
-                <UserSettingsButtonContents
-                  {...{ context, web3Context, active }}
-                />
-              )}
-            >
-              <UserSettings sx={{ p: 4, minWidth: "380px" }} />
-            </ButtonDropdown>
-          )}
-        </Box>
+        <Flex
+          sx={{
+            position: "relative",
+          }}
+        >
+          <Box>
+            {!shouldHideSettings && (
+              <ButtonDropdown
+                ButtonContents={({ active }) => (
+                  <UserSettingsButtonContents
+                    {...{ context, web3Context, active }}
+                  />
+                )}
+              >
+                <UserSettings sx={{ p: 4, minWidth: "380px" }} />
+              </ButtonDropdown>
+            )}
+          </Box>
+        </Flex>
       </Flex>
-    </Flex>
+    )
   );
 }
 

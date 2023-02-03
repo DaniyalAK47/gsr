@@ -33,7 +33,6 @@ function getHandler(
           ? new JsonRpcBatchProvider(networksById[chainId].infuraUrl, chainId)
           : new JsonRpcCachedProvider(networksById[chainId].infuraUrl, chainId);
       }
-      console.log(provider, "provider");
       return provider;
     };
   })();

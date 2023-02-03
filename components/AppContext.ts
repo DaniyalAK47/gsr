@@ -18,6 +18,7 @@ import { observe } from "blockchain/calls/observe";
 import { tokenBalance } from "blockchain/calls/erc20";
 import { shareReplay } from "rxjs/operators";
 import { createBalance$ } from "blockchain/tokens";
+import { createAccountData } from "features/account/AccountData";
 
 export type UIReducer = (prev: any, event: any) => any;
 
@@ -83,6 +84,15 @@ export function setupAppContext() {
     (token, address) => `${token}_${address}`
   );
 
+  const accountData$ = createAccountData(
+    web3Context$,
+    balance$
+    // vaults$,
+    // hasActiveDsProxyAavePosition$,
+    // readPositionCreatedEvents$,
+    // ensName$,
+  );
+
   return {
     web3Context$,
     web3ContextConnected$,
@@ -92,7 +102,7 @@ export function setupAppContext() {
     onEveryBlock$,
     redirectState$,
     connectedContext$,
-    balance$,
+    accountData$,
   };
 }
 

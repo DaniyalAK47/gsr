@@ -6,6 +6,12 @@ export type ReducersMap = {
   [key: string]: UIReducer;
 };
 
-export async function setupTorusContext() {
-  return await redirectResults();
+export async function setupTorusContext(options: Record<string, any> = {}) {
+  try {
+    // return await redirectResults();
+    throw new Error("torus not working");
+  } catch (error) {
+    options.switchNetworkModal("walletIssue");
+    console.log("error in redirect result", error);
+  }
 }

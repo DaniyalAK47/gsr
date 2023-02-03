@@ -5,6 +5,11 @@ import { WithChildren } from "../helpers/types";
 import { AppContext, setupAppContext } from "./AppContext";
 import { setupTorusContext } from "./TorusContext";
 import { useFeatureToggle } from "helpers/useFeatureToggle";
+import {
+  SwitchNetworkModal,
+  SwitchNetworkModalType,
+} from "./SwitchNetworkModal";
+import { useModal } from "helpers/modalHook";
 
 export const appContext =
   React.createContext<AppContext | undefined>(undefined);
@@ -53,6 +58,9 @@ export function AppContextProvider({ children }: WithChildren) {
     useState<RedirectResult | undefined>(undefined);
   const router = useRouter();
   const torusToggle = useFeatureToggle("Torus");
+  const openModal = useModal();
+  const switchNetworkModal = (type: SwitchNetworkModalType) =>
+    openModal(SwitchNetworkModal, { type });
 
   useEffect(() => {
     setContext(setupAppContext());
@@ -61,22 +69,23 @@ export function AppContextProvider({ children }: WithChildren) {
   useEffect(() => {
     const getData = async () => {
       if (torusToggle && router.pathname == "/signedIn") {
-        setContextTorus(await setupTorusContext());
+        setContextTorus(
+          await setupTorusContext({
+            switchNetworkModal,
+          })
+        );
       }
     };
     getData();
   }, [router.pathname]);
 
   return (
-    console.log(context, "context"),
-    (
-      <>
-        <torusContext.Provider
-          value={{ ...contextTorus, setState: setContextTorus }}
-        >
-          <appContext.Provider value={context}>{children}</appContext.Provider>
-        </torusContext.Provider>
-      </>
-    )
+    <>
+      <torusContext.Provider
+        value={{ ...contextTorus, setState: setContextTorus }}
+      >
+        <appContext.Provider value={context}>{children}</appContext.Provider>
+      </torusContext.Provider>
+    </>
   );
 }

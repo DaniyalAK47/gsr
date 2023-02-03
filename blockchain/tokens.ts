@@ -23,7 +23,11 @@ export function createBalance$(
       if (token === "ETH") {
         return updateInterval$.pipe(
           switchMap(() => bindNodeCallback(web3.eth.getBalance)(address)),
-          map((ethBalance: string) => amountFromWei(new BigNumber(ethBalance))),
+          map((ethBalance: string) => {
+            console.log(ethBalance, "ethBalance in");
+
+            return amountFromWei(new BigNumber(ethBalance));
+          }),
           distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
           shareReplay(1)
         );

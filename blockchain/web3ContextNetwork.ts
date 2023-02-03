@@ -2,8 +2,8 @@ import { isNull, isUndefined, memoize } from "lodash";
 import Web3 from "web3";
 
 export const networkNameToId = {
-  // main: 132258,
-  main: 1,
+  main: 132258,
+  // main: 1,
   goerli: 5,
   kovan: 42,
   hardhat: 2137,

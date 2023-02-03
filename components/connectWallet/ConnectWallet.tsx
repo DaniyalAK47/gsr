@@ -58,6 +58,8 @@ export async function getConnector(
   network: number,
   options: Record<string, any> = {}
 ) {
+  console.log("inside getConnector");
+
   assert(rpcUrls[network], "Unsupported chainId!");
   if (
     connectorKind !== "injected" &&
@@ -243,6 +245,8 @@ export function connect(
   options: Record<string, unknown> = {}
 ) {
   return async () => {
+    console.log("it is being called");
+
     if (
       web3Context?.status === "error" ||
       web3Context?.status === "notConnected" ||
@@ -547,10 +551,13 @@ export function ConnectWallet() {
               isConnecting: false,
               iconName: "torus", // todo: use some default icon instead of metamask
               description: "Torus",
-              connect: () =>
+              connect: () => {
+                // const networkId = getNetworkId();
+                // connect(web3Context, "network", networkId)();
                 connectTorus({
                   switchNetworkModal,
-                }),
+                });
+              },
               missingInjectedWallet: false,
             }}
           />
@@ -682,6 +689,7 @@ export function disconnect(web3Context: Web3Context | undefined) {
     web3Context?.status === "connectedReadonly"
   ) {
     web3Context.deactivate();
+    sessionStorage.clear();
 
     // WalletConnect places this in LS and tries to reconnect without asking for QR
     if (web3Context.connectionKind === "walletConnect") {

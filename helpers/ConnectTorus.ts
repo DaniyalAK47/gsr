@@ -42,23 +42,20 @@ export async function connect(options: Record<string, any> = {}) {
 }
 
 export async function redirectResults() {
-  try {
-    torusSdk = new TorusSdk({
-      baseUrl: window.location.origin,
-      redirectPathName: "signedIn",
-      enableLogging: true,
-      uxMode: UX_MODE.REDIRECT,
-      network: "mainnet",
-    });
+  torusSdk = new TorusSdk({
+    baseUrl: window.location.origin,
+    redirectPathName: "signedIn",
+    enableLogging: true,
+    uxMode: UX_MODE.REDIRECT,
+    network: "mainnet",
+  });
 
-    await torusSdk.init({ skipSw: true });
-    console.log(torusSdk, "torusSdk redirectResults");
+  await torusSdk.init({ skipSw: true });
+  console.log(torusSdk, "torusSdk redirectResults");
 
-    let torusResult = await torusSdk?.getRedirectResult();
-    console.log(torusResult, "torusResult");
+  let torusResult = await torusSdk?.getRedirectResult();
+  console.log(torusResult, "torusResult");
+  sessionStorage.setItem("walletData", JSON.stringify(torusResult.result));
 
-    return torusResult;
-  } catch (error) {
-    console.log("error", error);
-  }
+  return torusResult;
 }

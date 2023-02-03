@@ -63,10 +63,20 @@ export function createContext$(
       // magic link has limit for querying block range and we can't get events in one call
       // couldn't get information from them about what block range they allow
       const networkData = networksById[web3Context.chainId];
+      console.log(networkData, "networkData");
+      console.log(web3Context, "web3context createContext");
+
       const web3ProviderGetPastLogs =
-        web3Context.connectionKind === "magicLink"
-          ? new Web3(networkData.infuraUrl)
+        web3Context.connectionKind === "magicLink" ||
+        web3Context.connectionKind === "network"
+          ? // ? new Web3(networkData.infuraUrl)
+            new Web3(
+              // "https://mainnet.infura.io/v3/83d2907df9a1437680466193da30126f"
+              networkData.infuraUrl
+            )
           : web3Context.web3;
+
+      console.log(web3ProviderGetPastLogs, "web3ProviderGetPastLogs");
 
       return {
         ...networkData,
@@ -136,7 +146,11 @@ export function createWeb3ContextConnected$(
 export function createAccount$(web3Context$: Observable<Web3Context>) {
   return web3Context$.pipe(
     map((status) =>
-      status.status === "connected" ? status.account : undefined
+      status.status === "connected"
+        ? status.account
+        : status.status === "connectedReadonly"
+        ? JSON.parse(sessionStorage.getItem("walletData"))?.publicAddress
+        : undefined
     )
   );
 }
@@ -165,3 +179,8 @@ export enum NetworkIds {
   GOERLI = 5,
   HARDHAT = 2137,
 }
+
+// curl --url https://api.dably.io/rpc \
+// -X POST \
+// -H "Content-Type: application/json" \
+// -d '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x4559A2C8Aa07DEf80F83BDC441dE3eB4e8cfeC42", "latest"],"id":1}'
